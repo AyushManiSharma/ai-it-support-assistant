@@ -1,20 +1,38 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
+import jwt from 'jsonwebtoken'; // <-- 1. Import JWT
 
-// 1. Wake up the environment variables (your hidden API key)
 dotenv.config();
 
 const app = express();
 const PORT = 5000;
 
-// 2. Initialize the OpenAI connection using your hidden key
 const openai = new OpenAI({
     apiKey: process.env.OPENAI_API_KEY,
 });
 
-// Allow the server to read JSON data from the front-end
 app.use(express.json());
+
+// 2. The Login Route
+app.post('/api/login', (req, res) => {
+    const { username, password } = req.body;
+
+    // Hardcoded credentials for MVP (In the real world, this checks a database)
+    if (username === 'admin' && password === 'password123') {
+        
+        // Create the token! It expires in 1 hour.
+        const token = jwt.sign(
+            { username: 'admin', role: 'IT_Support' }, 
+            process.env.JWT_SECRET as string, 
+            { expiresIn: '1h' }
+        );
+
+        res.json({ message: "Login successful", token: token });
+    } else {
+        res.status(401).json({ error: "Invalid credentials" });
+    }
+});
 
 // 3. Create the AI Chat Route
 app.post('/api/chat', async (req, res) => {
