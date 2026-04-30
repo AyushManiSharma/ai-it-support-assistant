@@ -1,7 +1,7 @@
 import express from 'express';
 import dotenv from 'dotenv';
 import OpenAI from 'openai';
-import jwt from 'jsonwebtoken'; // <-- 1. Import JWT
+import jwt from 'jsonwebtoken';
 
 dotenv.config();
 
@@ -14,7 +14,7 @@ const openai = new OpenAI({
 
 app.use(express.json());
 
-// 2. The Login Route
+// The Login Route
 app.post('/api/login', (req, res) => {
     const { username, password } = req.body;
 
@@ -34,8 +34,31 @@ app.post('/api/login', (req, res) => {
     }
 });
 
-// 3. Create the AI Chat Route
-app.post('/api/chat', async (req, res) => {
+// The Bouncer (Middleware)
+const authenticateToken = (req: express.Request, res: express.Response, next: express.NextFunction) => {
+    // Look for the token in the headers sent by the frontend
+    const authHeader = req.headers['authorization'];
+    
+    // The standard format is "Bearer <token_string>", so we split it to just get the string
+    const token = authHeader && authHeader.split(' ')[1];
+
+    // If there is no token at all, kick them out
+    if (!token) {
+        return res.status(401).json({ error: "Access denied. No token provided." });
+    }
+
+    // Verify the token using our secret key
+    jwt.verify(token, process.env.JWT_SECRET as string, (err, user) => {
+        if (err) {
+            return res.status(403).json({ error: "Invalid or expired token." });
+        }
+        // The token is valid! Let them through to the chat route
+        next();
+    });
+};
+
+// Create the AI Chat Route
+app.post('/api/chat', authenticateToken, async (req, res) => {
     try {
         // Grab the message the user typed in the front-end
         const userMessage = req.body.message;
