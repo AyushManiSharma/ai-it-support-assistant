@@ -67,9 +67,9 @@ To access the protected chat interface, use the following hardcoded credentials:
 
 📈 Future Roadmap
 
-    [ ] Cloud Deployment: Deploying the Dockerized container to Google Cloud Platform (GCP). 
+    [ ] Cloud Deployment: Deploying the Dockerized container to Amazon Web Services (AWS) using Elastic Container Service (ECS).
 
-    [ ] Database Integration: Replacing hardcoded credentials with a persistent database (PostgreSQL or MongoDB). 
+    [ ] Database Integration: Replacing hardcoded credentials with a persistent database like Amazon RDS or DynamoDB.
 
     [ ] Knowledge Base Context: Implementing "Grounding" to allow the AI to answer based on specific internal company documentation. 
 
