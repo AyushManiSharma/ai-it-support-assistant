@@ -1,18 +1,25 @@
-# Start with a lightweight, pre-configured Node.js computer
-FROM node:18-alpine
+FROM node:18-alpine AS builder
 
-# Create a folder inside the container to hold the app
 WORKDIR /app
 
-# Copy our package list and install the dependencies
 COPY package*.json ./
 RUN npm install
 
-# Copy all the actual code into the container
 COPY . .
+RUN npm run build
 
-# Open up port 5000 so the container can communicate with the outside world
+# Production image — only ships compiled output, not dev tools
+FROM node:18-alpine
+
+WORKDIR /app
+
+COPY package*.json ./
+RUN npm install --omit=dev
+
+COPY --chown=node:node --from=builder /app/dist ./dist
+
+USER node
+
 EXPOSE 5000
 
-# The command to wake up the server when the container starts
-CMD ["npx", "ts-node", "server.ts"]
+CMD ["node", "dist/server.js"]
