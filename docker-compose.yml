@@ -1,20 +1,16 @@
 version: '3.8'
 
 services:
-  # The Backend Service
   backend:
     build: ./backend
     ports:
       - "5000:5000"
-    # This securely injects the hidden API keys into the container
     env_file:
-      - ./backend/.env 
+      - ./backend/.env
 
-  # The Frontend Service
   frontend:
     build: ./frontend
     ports:
-      - "3000:3000"
-    # This ensures the backend wakes up before the frontend tries to talk to it
+      - "80:80"
     depends_on:
       - backend
