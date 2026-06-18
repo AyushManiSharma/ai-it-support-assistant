@@ -1,0 +1,13 @@
+node_modules/
+.env
+*.env
+
+# AWS deployment artifacts (contain account IDs)
+task-definition.json
+secret.json
+
+# Temp/debug files
+logs.json
+
+# TypeScript compiled output
+backend/dist/
